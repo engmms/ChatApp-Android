@@ -16,17 +16,13 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 object PermissionHelper {
 
     /**
-     * All runtime permissions.
-     *
-     * The WRITE_EXTERNAL_STORAGE permission implicitly allows reading, making READ_EXTERNAL_STORAGE
-     * redundant. The reason why I've included the permission nonetheless, is to have an explicit
-     * call to it. If proven to be useless, I will remove it in the future
+     * Request all runtime permissions at once. The WRITE_EXTERNAL_STORAGE permission implicitly allows reading, making
+     * READ_EXTERNAL_STORAGE redundant.
      */
     private val cameraAndExternalStoragePermissions = arrayOf(
         Manifest.permission.INTERNET,
         Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
     /**
