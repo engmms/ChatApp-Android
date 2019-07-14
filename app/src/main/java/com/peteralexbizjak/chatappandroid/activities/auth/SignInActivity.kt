@@ -1,4 +1,4 @@
-package com.peteralexbizjak.chatappandroid.activities
+package com.peteralexbizjak.chatappandroid.activities.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -101,7 +101,9 @@ class SignInActivity: AppCompatActivity() {
     }
 
     private fun googleSignIn() {
-        startActivityForResult(googleSignInClient.signInIntent, googleRequestCode)
+        startActivityForResult(googleSignInClient.signInIntent,
+            googleRequestCode
+        )
     }
 
     private fun passwordSignIn() {

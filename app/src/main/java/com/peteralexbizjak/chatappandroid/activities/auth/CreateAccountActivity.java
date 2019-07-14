@@ -1,4 +1,4 @@
-package com.peteralexbizjak.chatappandroid.activities;
+package com.peteralexbizjak.chatappandroid.activities.auth;
 
 import android.content.Intent;
 import android.os.Bundle;

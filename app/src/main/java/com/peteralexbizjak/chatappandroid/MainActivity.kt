@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.peteralexbizjak.chatappandroid.activities.SignInActivity
+import com.peteralexbizjak.chatappandroid.activities.auth.SignInActivity
 
 class MainActivity : AppCompatActivity() {
 
