@@ -5,11 +5,14 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import androidx.recyclerview.widget.RecyclerView
 import com.peteralexbizjak.chatappandroid.activities.SignInActivity
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
+
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,5 +25,8 @@ class MainActivity : AppCompatActivity() {
             sharedPreferences.edit().putBoolean("firstrun", true).apply()
             startActivity(Intent(this@MainActivity, SignInActivity::class.java))
         }
+
+        //Initialize views
+        recyclerView = findViewById(R.id.mainRecyclerView)
     }
 }
