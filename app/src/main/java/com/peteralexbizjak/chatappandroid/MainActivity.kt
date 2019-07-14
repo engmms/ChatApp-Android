@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.peteralexbizjak.chatappandroid.activities.FindUsers
 import com.peteralexbizjak.chatappandroid.activities.auth.SignInActivity
 
 class MainActivity : AppCompatActivity() {
@@ -31,5 +32,10 @@ class MainActivity : AppCompatActivity() {
         //Initialize views
         floatingActionButton = findViewById(R.id.mainFab)
         recyclerView = findViewById(R.id.mainRecyclerView)
+
+        //Set on click listener for FloatingActionButton
+        floatingActionButton.setOnClickListener {
+            startActivity(Intent(this@MainActivity, FindUsers::class.java))
+        }
     }
 }
