@@ -78,7 +78,8 @@ class FindUsers : AppCompatActivity() {
     }
 
     /**
-     * Display found users in a RecyclerView with the help of a custom adapter
+     * Display found users in a RecyclerView with the help of a custom adapter and transition to ChatActivity with
+     * recipient data (their uid and display name)
      */
     private fun displayFoundUsers(listOfUsers: MutableList<UserModel>) {
         val recyclerViewAdapter = UserRecyclerAdapter(this, listOfUsers)
@@ -86,7 +87,10 @@ class FindUsers : AppCompatActivity() {
         recyclerViewAdapter.notifyDataSetChanged()
         recyclerView.addOnItemClickListener(object: OnItemClickListener {
             override fun onItemClicked(view: View, position: Int) {
-                Toast.makeText(this@FindUsers, "Is ma boi ${listOfUsers[position].displayName} and his email is ${listOfUsers[position].email}", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this@FindUsers, ChatActivity::class.java)
+                intent.putExtra("recipientId", listOfUsers[position].id)
+                intent.putExtra("recipientDisplayName", listOfUsers[position].displayName)
+                startActivity(intent)
             }
         })
     }
