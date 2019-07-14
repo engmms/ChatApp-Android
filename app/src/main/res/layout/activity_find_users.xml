@@ -22,7 +22,7 @@
             android:layout_height="56dp">
 
         <ImageView
-                android:id="@+id/fragmentFindUserSearchIcon"
+                android:id="@+id/findUserSearchIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -30,8 +30,8 @@
                 android:src="@drawable/ic_search"/>
 
         <EditText
-                android:id="@+id/fragmentFindUserSearchField"
-                android:layout_toRightOf="@id/fragmentFindUserSearchIcon"
+                android:id="@+id/findUserSearchField"
+                android:layout_toRightOf="@id/findUserSearchIcon"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@null"
