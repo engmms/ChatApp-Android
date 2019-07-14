@@ -86,7 +86,7 @@ class FindUsers : AppCompatActivity() {
         recyclerViewAdapter.notifyDataSetChanged()
         recyclerView.addOnItemClickListener(object: OnItemClickListener {
             override fun onItemClicked(view: View, position: Int) {
-                Toast.makeText(this@FindUsers, "Is ma boi ${listOfUsers[position].displayName}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@FindUsers, "Is ma boi ${listOfUsers[position].displayName} and his email is ${listOfUsers[position].email}", Toast.LENGTH_SHORT).show()
             }
         })
     }

@@ -24,6 +24,7 @@
         <activity android:name=".activities.auth.SignInActivity"/>
         <activity android:name=".activities.auth.CreateAccountActivity"/>
         <activity android:name=".activities.FindUsers"/>
+        <activity android:name=".activities.ChatActivity"/>
     </application>
 
 </manifest>
