@@ -44,7 +44,11 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
 
     private String recipientId, recipientDisplayName;
-    private String channelIdGlobal, messageIdGlobal;
+    private String channelIdGlobal;
+
+    List<MessageModel> messageModelList = new ArrayList<>();
+
+    MessageRecyclerAdapter adapter = new MessageRecyclerAdapter(this, messageModelList);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,7 +84,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        MessageRecyclerAdapter adapter = new MessageRecyclerAdapter(this, displayChatMessages());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -89,14 +92,15 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private List<MessageModel> displayChatMessages() {
-        List<MessageModel> messageModelList = new ArrayList<>();
         databaseReference.child(channelIdGlobal).child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                messageModelList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     MessageModel messageModel = snapshot.getValue(MessageModel.class);
                     if (messageModel != null) messageModelList.add(messageModel);
                 }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -171,6 +175,8 @@ public class ChatActivity extends AppCompatActivity {
                         databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
                     } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
                 }
+
+                displayChatMessages();
             } else Toast.makeText(this, "Cannot send empty text", Toast.LENGTH_SHORT).show();
         });
     }
