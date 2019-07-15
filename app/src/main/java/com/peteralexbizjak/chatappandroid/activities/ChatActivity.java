@@ -88,6 +88,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendMessageIconClickListener() {
         sendMessageIcon.setOnClickListener(v -> {
+            Toast.makeText(this, "Send message", Toast.LENGTH_SHORT).show();
             if (!messageEditText.getText().toString().isEmpty()) {
                 String channelId, messageId;
                 List<String> participants = new ArrayList<>();
@@ -103,11 +104,11 @@ public class ChatActivity extends AppCompatActivity {
                 //Get message text
                 String messageText = messageEditText.getText().toString();
 
-                if (participants.size() == 2 && channelId != null && messageId != null) {
+                if (channelId != null && messageId != null) {
 
                     //Write to database both channel and message
                     databaseReference.child(channelId).setValue(new ChannelModel(channelId, participants));
-                    databaseReference.child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
+                    databaseReference.child(channelId).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
                 } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
             } else Toast.makeText(this, "Cannot send empty text", Toast.LENGTH_SHORT).show();
         });
