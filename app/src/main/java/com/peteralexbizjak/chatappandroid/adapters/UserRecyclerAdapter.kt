@@ -22,7 +22,7 @@ class UserRecyclerAdapter(
 ) : RecyclerView.Adapter<UserRecyclerAdapter.ViewHolder>() {
 
     private var onItemClickListener: OnItemClickListener? = null
-    private var firebaseStorage = FirebaseStorage.getInstance()
+    private var firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserRecyclerAdapter.ViewHolder {
         return ViewHolder(LayoutInflater.from(context).inflate(R.layout.user_item, parent, false))
@@ -33,7 +33,7 @@ class UserRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: UserRecyclerAdapter.ViewHolder, position: Int) {
-        val userModel = userModelList[position]
+        val userModel: UserModel = userModelList[position]
 
         if (!userModel.profilePicture.isNullOrBlank()) {
             if (userModel.profilePicture.contains("firebasestorage")) {
