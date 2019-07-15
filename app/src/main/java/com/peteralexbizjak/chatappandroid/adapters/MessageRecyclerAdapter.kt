@@ -15,7 +15,7 @@ class MessageRecyclerAdapter(
     private val messageModelList: List<MessageModel>
 ) : RecyclerView.Adapter<MessageRecyclerAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageRecyclerAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(context).inflate(R.layout.message_item, parent, false))
     }
 
@@ -23,7 +23,7 @@ class MessageRecyclerAdapter(
         return messageModelList.size
     }
 
-    override fun onBindViewHolder(holder: MessageRecyclerAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val messageModel: MessageModel = messageModelList[position]
         holder.messageContents.text = messageModel.messageContents
     }

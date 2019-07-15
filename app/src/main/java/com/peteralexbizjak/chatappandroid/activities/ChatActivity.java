@@ -1,5 +1,6 @@
 package com.peteralexbizjak.chatappandroid.activities;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -9,14 +10,16 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import com.peteralexbizjak.chatappandroid.R;
+import com.peteralexbizjak.chatappandroid.adapters.MessageRecyclerAdapter;
 import com.peteralexbizjak.chatappandroid.models.ChannelModel;
 import com.peteralexbizjak.chatappandroid.models.MessageModel;
 
@@ -39,6 +42,7 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
 
     private String recipientId, recipientDisplayName;
+    private String channelIdGlobal, messageIdGlobal;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +76,35 @@ public class ChatActivity extends AppCompatActivity {
         sendMessageIconClickListener();
     }
 
+    private void setupRecyclerView() {
+        MessageRecyclerAdapter adapter = new MessageRecyclerAdapter(this, displayChatMessages());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    private List<MessageModel> displayChatMessages() {
+        List<MessageModel> messageModelList = new ArrayList<>();
+        databaseReference.child(channelIdGlobal).child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    MessageModel messageModel = snapshot.getValue(MessageModel.class);
+                    if (messageModel != null) messageModelList.add(messageModel);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(ChatActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return messageModelList;
+    }
+
     private void setupChatArea() {
         messageEditText.addTextChangedListener(new TextWatcher() {
 
@@ -93,23 +126,48 @@ public class ChatActivity extends AppCompatActivity {
                 String channelId, messageId;
                 List<String> participants = new ArrayList<>();
 
-                //Generate channel and message IDs
-                channelId = databaseReference.push().getKey();
-                messageId = databaseReference.push().getKey();
+                if (channelIdGlobal == null) {
+                    //Generate channel ID and set global channel ID
+                    channelId = databaseReference.push().getKey();
+                    channelIdGlobal = channelId;
 
-                //Acquire participant IDs and add them to the list (first the current user, then the recipient)
-                participants.add(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
-                participants.add(recipientId);
+                    //Generate message ID and set
+                    messageId = databaseReference.push().getKey();
 
-                //Get message text
-                String messageText = messageEditText.getText().toString();
+                    setupRecyclerView();
 
-                if (channelId != null && messageId != null) {
+                    //Acquire participant IDs and add them to the list (first the current user, then the recipient)
+                    participants.add(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
+                    participants.add(recipientId);
 
-                    //Write to database both channel and message
-                    databaseReference.child(channelId).setValue(new ChannelModel(channelId, participants));
-                    databaseReference.child(channelId).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
-                } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
+                    //Get message text
+                    String messageText = messageEditText.getText().toString();
+
+                    if (messageId != null) {
+
+                        //Write to database both channel and message
+                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(channelIdGlobal, participants));
+                        databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
+                    } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
+                } else {
+                    //Generate message ID and set
+                    messageId = databaseReference.push().getKey();
+
+                    setupRecyclerView();
+
+                    //Acquire participant IDs and add them to the list (first the current user, then the recipient)
+                    participants.add(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
+                    participants.add(recipientId);
+
+                    //Get message text
+                    String messageText = messageEditText.getText().toString();
+
+                    if (messageId != null) {
+
+                        //Write to database both channel and message
+                        databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
+                    } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
+                }
             } else Toast.makeText(this, "Cannot send empty text", Toast.LENGTH_SHORT).show();
         });
     }
