@@ -1,6 +1,7 @@
 package com.peteralexbizjak.chatappandroid.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
+import com.peteralexbizjak.chatappandroid.MainActivity;
 import com.peteralexbizjak.chatappandroid.R;
 import com.peteralexbizjak.chatappandroid.adapters.MessageRecyclerAdapter;
 import com.peteralexbizjak.chatappandroid.models.ChannelModel;
@@ -68,6 +70,7 @@ public class ChatActivity extends AppCompatActivity {
         //Setup Toolbar
         setSupportActionBar(toolbar);
         toolbar.setTitle(recipientDisplayName);
+        toolbar.setNavigationOnClickListener(v -> startActivity(new Intent(ChatActivity.this, MainActivity.class)));
 
         //Setup chat area
         setupChatArea();
