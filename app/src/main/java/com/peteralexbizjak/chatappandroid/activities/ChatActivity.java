@@ -148,22 +148,24 @@ public class ChatActivity extends AppCompatActivity {
 
                     setupRecyclerView();
 
-                    //Acquire participant IDs and add them to the list (first the current user, then the recipient)
-                    participants.add(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
-                    participants.add(recipientId);
+                    //Generate hash map of reduced current user data
+                    HashMap<String, List<String>> currentUserReducedData = new HashMap<>();
+                    List<String> currentUserReduced = new ArrayList<>();
+                    currentUserReduced.add(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getDisplayName());
+                    currentUserReduced.add(Objects.requireNonNull(firebaseAuth.getCurrentUser().getPhotoUrl()).toString());
+                    currentUserReducedData.put(firebaseAuth.getCurrentUser().getUid(), currentUserReduced);
 
-                    //Acquire profile picture URLs
-                    listOfUserUrls.add(Objects.requireNonNull(firebaseAuth.getCurrentUser().getPhotoUrl()).toString());
-                    listOfUserUrls.add(recipientPhotoUrl);
+                    //Generate hash map of reduced recipient data
+                    HashMap<String, List<String>> recipientReducedData = new HashMap<>();
+                    List<String> recipientReduced = new ArrayList<>();
+                    recipientReduced.add(recipientDisplayName);
+                    recipientReduced.add(recipientPhotoUrl);
+                    recipientReducedData.put(recipientId, recipientReduced);
 
-                    HashMap<String, String> currentUserHash = new HashMap<>();
-                    HashMap<String, String> recipientHash = new HashMap<>();
-
-                    currentUserHash.put(firebaseAuth.getCurrentUser().getUid(), firebaseAuth.getCurrentUser().getPhotoUrl().toString());
-                    recipientHash.put(recipientId, recipientPhotoUrl);
-
-                    personProfilUrlHash.add(currentUserHash);
-                    personProfilUrlHash.add(recipientHash);
+                    //Generate a list of reduced users data
+                    List<HashMap<String, List<String>>> listOfReducedData = new ArrayList<>();
+                    listOfReducedData.add(currentUserReducedData);
+                    listOfReducedData.add(recipientReducedData);
 
                     //Get message text
                     String messageText = messageEditText.getText().toString();
@@ -171,7 +173,7 @@ public class ChatActivity extends AppCompatActivity {
                     if (messageId != null) {
 
                         //Write to database both channel and message
-                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(channelIdGlobal, participants, listOfUserUrls, RandomColorGenerator.generateRandomColorInt()));
+                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(channelId, listOfReducedData, RandomColorGenerator.generateRandomColorInt()));
                         databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
                     } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
                 } else {

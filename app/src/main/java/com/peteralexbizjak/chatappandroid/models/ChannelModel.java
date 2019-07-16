@@ -1,19 +1,18 @@
 package com.peteralexbizjak.chatappandroid.models;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class ChannelModel {
 
     public String channelId;
-    public List<String> participants;
-    public List<String> photoUrls;
+    public List<HashMap<String, List<String>>> basicUserInfos;
     public int channelColor;
 
     public ChannelModel() {}
-    public ChannelModel(String channelId, List<String> participants, List<String> photoUrls, int channelColor) {
+    public ChannelModel(String channelId, List<HashMap<String, List<String>>> basicUserInfos, int channelColor) {
         this.channelId = channelId;
-        this.participants = participants;
-        this.photoUrls = photoUrls;
+        this.basicUserInfos = basicUserInfos;
         this.channelColor = channelColor;
     }
 
@@ -25,20 +24,12 @@ public class ChannelModel {
         this.channelId = channelId;
     }
 
-    public List<String> getParticipants() {
-        return participants;
+    public List<HashMap<String, List<String>>> getBasicUserInfos() {
+        return basicUserInfos;
     }
 
-    public void setParticipants(List<String> participants) {
-        this.participants = participants;
-    }
-
-    public List<String> getPhotoUrls() {
-        return photoUrls;
-    }
-
-    public void setPhotoUrls(List<String> photoUrls) {
-        this.photoUrls = photoUrls;
+    public void setBasicUserInfos(List<HashMap<String, List<String>>> basicUserInfos) {
+        this.basicUserInfos = basicUserInfos;
     }
 
     public int getChannelColor() {
