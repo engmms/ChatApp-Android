@@ -24,6 +24,7 @@ import com.peteralexbizjak.chatappandroid.R;
 import com.peteralexbizjak.chatappandroid.adapters.MessageRecyclerAdapter;
 import com.peteralexbizjak.chatappandroid.models.ChannelModel;
 import com.peteralexbizjak.chatappandroid.models.MessageModel;
+import com.peteralexbizjak.chatappandroid.utils.RandomColorGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,7 +171,7 @@ public class ChatActivity extends AppCompatActivity {
                     if (messageId != null) {
 
                         //Write to database both channel and message
-                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(channelIdGlobal, participants, listOfUserUrls));
+                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(channelIdGlobal, participants, listOfUserUrls, RandomColorGenerator.generateRandomColorInt()));
                         databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
                     } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
                 } else {
