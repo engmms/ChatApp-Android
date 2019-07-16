@@ -135,8 +135,6 @@ public class ChatActivity extends AppCompatActivity {
             Toast.makeText(this, "Send message", Toast.LENGTH_SHORT).show();
             if (!messageEditText.getText().toString().isEmpty()) {
                 String channelId, messageId;
-                List<String> participants = new ArrayList<>();
-                List<String> listOfUserUrls = new ArrayList<>();
 
                 if (channelIdGlobal == null) {
                     //Generate channel ID and set global channel ID
@@ -173,8 +171,12 @@ public class ChatActivity extends AppCompatActivity {
                     if (messageId != null) {
 
                         //Write to database both channel and message
-                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(channelId, listOfReducedData, RandomColorGenerator.generateRandomColorInt()));
-                        databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
+                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(
+                                channelId, listOfReducedData, RandomColorGenerator.generateRandomColorInt()
+                        ));
+                        databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(
+                                messageId, Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid(), messageText
+                        ));
                     } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
                 } else {
                     //Generate message ID and set
@@ -182,17 +184,15 @@ public class ChatActivity extends AppCompatActivity {
 
                     setupRecyclerView();
 
-                    //Acquire participant IDs and add them to the list (first the current user, then the recipient)
-                    participants.add(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
-                    participants.add(recipientId);
-
                     //Get message text
                     String messageText = messageEditText.getText().toString();
 
                     if (messageId != null) {
 
                         //Write to database both channel and message
-                        databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
+                        databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(
+                                messageId, Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid(), messageText
+                        ));
                     } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
                 }
 
