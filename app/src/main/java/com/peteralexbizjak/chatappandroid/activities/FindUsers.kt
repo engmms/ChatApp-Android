@@ -90,6 +90,7 @@ class FindUsers : AppCompatActivity() {
                 val intent = Intent(this@FindUsers, ChatActivity::class.java)
                 intent.putExtra("recipientId", listOfUsers[position].id)
                 intent.putExtra("recipientDisplayName", listOfUsers[position].displayName)
+                intent.putExtra("recipientPhotoUrl", listOfUsers[position].profilePicture)
                 startActivity(intent)
             }
         })

@@ -9,10 +9,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.peteralexbizjak.chatappandroid.R
 import com.peteralexbizjak.chatappandroid.models.MessageModel
+import com.peteralexbizjak.chatappandroid.utils.CircleTransform
+import com.squareup.picasso.Picasso
 
 class MessageRecyclerAdapter(
     private val context: Context?,
-    private val messageModelList: List<MessageModel>
+    private val messageModelList: List<MessageModel>,
+    private val userProfilHashMap: List<HashMap<String, String>>
 ) : RecyclerView.Adapter<MessageRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,6 +28,13 @@ class MessageRecyclerAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val messageModel: MessageModel = messageModelList[position]
+
+        userProfilHashMap.forEach {
+            if (it.containsKey(messageModel.senderId)) {
+                Picasso.get().load(it.getValue(messageModel.senderId)).transform(CircleTransform()).into(holder.senderPicture)
+            }
+        }
+
         holder.messageContents.text = messageModel.messageContents
     }
 

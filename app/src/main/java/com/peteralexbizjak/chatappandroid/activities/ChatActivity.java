@@ -26,6 +26,7 @@ import com.peteralexbizjak.chatappandroid.models.ChannelModel;
 import com.peteralexbizjak.chatappandroid.models.MessageModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,12 +44,13 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
 
-    private String recipientId, recipientDisplayName;
+    private String recipientId, recipientDisplayName, recipientPhotoUrl;
     private String channelIdGlobal;
 
     List<MessageModel> messageModelList = new ArrayList<>();
+    List<HashMap<String, String>> personProfilUrlHash = new ArrayList<>();
 
-    MessageRecyclerAdapter adapter = new MessageRecyclerAdapter(this, messageModelList);
+    MessageRecyclerAdapter adapter = new MessageRecyclerAdapter(this, messageModelList, personProfilUrlHash);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class ChatActivity extends AppCompatActivity {
 
         recipientId = getIntent().getStringExtra("recipientId");
         recipientDisplayName = getIntent().getStringExtra("recipientDisplayName");
+        recipientPhotoUrl = getIntent().getStringExtra("recipientPhotoUrl");
 
         //Get instance of FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -132,6 +135,7 @@ public class ChatActivity extends AppCompatActivity {
             if (!messageEditText.getText().toString().isEmpty()) {
                 String channelId, messageId;
                 List<String> participants = new ArrayList<>();
+                List<String> listOfUserUrls = new ArrayList<>();
 
                 if (channelIdGlobal == null) {
                     //Generate channel ID and set global channel ID
@@ -147,13 +151,26 @@ public class ChatActivity extends AppCompatActivity {
                     participants.add(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
                     participants.add(recipientId);
 
+                    //Acquire profile picture URLs
+                    listOfUserUrls.add(Objects.requireNonNull(firebaseAuth.getCurrentUser().getPhotoUrl()).toString());
+                    listOfUserUrls.add(recipientPhotoUrl);
+
+                    HashMap<String, String> currentUserHash = new HashMap<>();
+                    HashMap<String, String> recipientHash = new HashMap<>();
+
+                    currentUserHash.put(firebaseAuth.getCurrentUser().getUid(), firebaseAuth.getCurrentUser().getPhotoUrl().toString());
+                    recipientHash.put(recipientId, recipientPhotoUrl);
+
+                    personProfilUrlHash.add(currentUserHash);
+                    personProfilUrlHash.add(recipientHash);
+
                     //Get message text
                     String messageText = messageEditText.getText().toString();
 
                     if (messageId != null) {
 
                         //Write to database both channel and message
-                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(channelIdGlobal, participants));
+                        databaseReference.child(channelIdGlobal).setValue(new ChannelModel(channelIdGlobal, participants, listOfUserUrls));
                         databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(messageId, recipientId, messageText));
                     } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
                 } else {
