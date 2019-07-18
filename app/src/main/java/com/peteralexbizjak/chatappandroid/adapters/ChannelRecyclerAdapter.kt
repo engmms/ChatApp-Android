@@ -33,8 +33,8 @@ class ChannelRecyclerAdapter(
 
         holder.channelColor.setColorFilter(channelModel.channelColor)
 
-        channelModel.participants.forEach {
-            if (!it.equals(firebaseAuth.currentUser?.uid)) holder.channelRecipient.text = it
+        channelModel.basicUserInfos.forEach {
+
         }
     }
 

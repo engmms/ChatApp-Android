@@ -165,6 +165,17 @@ public class ChatActivity extends AppCompatActivity {
                     listOfReducedData.add(currentUserReducedData);
                     listOfReducedData.add(recipientReducedData);
 
+                    //Generate a hash map where key is the user ID and value is profile picture URL
+                    HashMap<String, String> currentUserIdPhoto = new HashMap<>();
+                    HashMap<String, String> recipientIdPhoto = new HashMap<>();
+                    currentUserIdPhoto.put(firebaseAuth.getCurrentUser().getUid(), firebaseAuth.getCurrentUser().getPhotoUrl().toString());
+                    recipientIdPhoto.put(recipientId, recipientPhotoUrl);
+
+                    //Add the whole thing to the personProfilUrlHash
+                    personProfilUrlHash.clear();
+                    personProfilUrlHash.add(currentUserIdPhoto);
+                    personProfilUrlHash.add(recipientIdPhoto);
+
                     //Get message text
                     String messageText = messageEditText.getText().toString();
 
