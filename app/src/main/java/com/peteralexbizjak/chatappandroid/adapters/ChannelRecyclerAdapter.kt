@@ -11,6 +11,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.peteralexbizjak.chatappandroid.R
 import com.peteralexbizjak.chatappandroid.interfaces.OnItemClickListener
 import com.peteralexbizjak.chatappandroid.models.ChannelModel
+import com.peteralexbizjak.chatappandroid.utils.CircleTransform
+import com.squareup.picasso.Picasso
 
 class ChannelRecyclerAdapter(
     private val context: Context?,
@@ -20,7 +22,7 @@ class ChannelRecyclerAdapter(
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var onItemClickListener: OnItemClickListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelRecyclerAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(context).inflate(R.layout.channel_item, parent, false))
     }
 
@@ -28,13 +30,17 @@ class ChannelRecyclerAdapter(
         return channelList.size
     }
 
-    override fun onBindViewHolder(holder: ChannelRecyclerAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val channelModel: ChannelModel = channelList[position]
 
         holder.channelColor.setColorFilter(channelModel.channelColor)
 
         channelModel.basicUserInfos.forEach {
-
+            for (key: String in it.keys) {
+                if (key != firebaseAuth.currentUser?.photoUrl.toString()) {
+                    holder.channelRecipient.text = it[key]?.get(0)
+                }
+            }
         }
     }
 

@@ -114,7 +114,7 @@ class FindUsers : AppCompatActivity() {
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (snapshot in dataSnapshot.children) {
+                for (snapshot: DataSnapshot in dataSnapshot.children) {
                     val user: UserModel = snapshot.getValue(UserModel::class.java)!!
                     if (user.id != firebaseAuth.currentUser!!.uid && (user.displayName.toLowerCase().contains(searchQuery) || user.email.toLowerCase().contains(searchQuery)))
                         userModelList.add(user)
