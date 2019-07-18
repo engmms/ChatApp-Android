@@ -83,7 +83,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayChannels() {
-        Log.d("main-activity", listOfChannels.toString())
         val channelRecyclerAdapter = ChannelRecyclerAdapter(this, listOfChannels)
         recyclerView.adapter = channelRecyclerAdapter
         channelRecyclerAdapter.notifyDataSetChanged()

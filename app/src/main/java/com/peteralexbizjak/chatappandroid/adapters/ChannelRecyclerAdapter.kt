@@ -33,12 +33,11 @@ class ChannelRecyclerAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val channelModel: ChannelModel = channelList[position]
 
-        holder.channelColor.setColorFilter(channelModel.channelColor)
-
         channelModel.basicUserInfos.forEach {
             for (key: String in it.keys) {
                 if (key != firebaseAuth.currentUser?.photoUrl.toString()) {
                     holder.channelRecipient.text = it[key]?.get(0)
+                    Picasso.get().load(it[key]?.get(1)).transform(CircleTransform()).into(holder.channelColor)
                 }
             }
         }
