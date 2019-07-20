@@ -92,7 +92,6 @@ class MainActivity : AppCompatActivity() {
             override fun onItemClicked(view: View, position: Int) {
                 val intent = Intent(this@MainActivity, ChatActivity::class.java)
                 val participantData: List<String> = extractRecipientData(listOfChannels[position])
-                intent.putExtra("recipientId", listOfChannels[position])
             }
         })
     }
@@ -116,8 +115,22 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Return a list of recipient data relevant to the transition from the main activity to the chat activity. This list
+     * contains three items in the precisely defined order.
+     *
+     * Index 0: recipient ID
+     * Index 1: recipient display name
+     * Index 2: recipient profile photo URL (as a string)
+     */
     private fun extractRecipientData(channelModel: ChannelModel): List<String> {
-        val userInfos: List<HashMap<String, List<String>>> = channelModel.basicUserInfos
-
+        var listOfRecipientData: List<String> = emptyList()
+        channelModel.basicUserInfos?.forEach {
+            if (!it.containsKey(firebaseAuth.currentUser?.uid)) {
+                val recipientId: String = it.keys.elementAt(0)
+                listOfRecipientData = listOf(recipientId, it[recipientId]!![0], it[recipientId]!![1])
+            }
+        }
+        return listOfRecipientData
     }
 }
