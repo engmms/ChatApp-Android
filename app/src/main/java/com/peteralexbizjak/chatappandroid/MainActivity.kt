@@ -2,19 +2,21 @@ package com.peteralexbizjak.chatappandroid
 
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.peteralexbizjak.chatappandroid.activities.ChatActivity
 import com.peteralexbizjak.chatappandroid.activities.FindUsers
 import com.peteralexbizjak.chatappandroid.activities.auth.SignInActivity
 import com.peteralexbizjak.chatappandroid.adapters.ChannelRecyclerAdapter
+import com.peteralexbizjak.chatappandroid.interfaces.OnItemClickListener
 import com.peteralexbizjak.chatappandroid.models.ChannelModel
 
 class MainActivity : AppCompatActivity() {
@@ -86,5 +88,36 @@ class MainActivity : AppCompatActivity() {
         val channelRecyclerAdapter = ChannelRecyclerAdapter(this, listOfChannels)
         recyclerView.adapter = channelRecyclerAdapter
         channelRecyclerAdapter.notifyDataSetChanged()
+        recyclerView.addOnItemClickListener(object: OnItemClickListener {
+            override fun onItemClicked(view: View, position: Int) {
+                val intent = Intent(this@MainActivity, ChatActivity::class.java)
+                val participantData: List<String> = extractRecipientData(listOfChannels[position])
+                intent.putExtra("recipientId", listOfChannels[position])
+            }
+        })
+    }
+
+    /**
+     * Setup on click listener for RecyclerView
+     */
+    private fun RecyclerView.addOnItemClickListener(onClickListener: OnItemClickListener) {
+        this.addOnChildAttachStateChangeListener(object: RecyclerView.OnChildAttachStateChangeListener {
+
+            override fun onChildViewDetachedFromWindow(view: View) {
+                view.setOnClickListener(null)
+            }
+
+            override fun onChildViewAttachedToWindow(view: View) {
+                view.setOnClickListener {
+                    val holder = getChildViewHolder(view)
+                    onClickListener.onItemClicked(view, holder.adapterPosition)
+                }
+            }
+        })
+    }
+
+    private fun extractRecipientData(channelModel: ChannelModel): List<String> {
+        val userInfos: List<HashMap<String, List<String>>> = channelModel.basicUserInfos
+
     }
 }
