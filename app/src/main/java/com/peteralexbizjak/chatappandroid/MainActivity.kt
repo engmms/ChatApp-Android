@@ -84,14 +84,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Display channels that a user is part of. Also handle on item click listeners on RecyclerView items
+     */
     private fun displayChannels() {
         val channelRecyclerAdapter = ChannelRecyclerAdapter(this, listOfChannels)
         recyclerView.adapter = channelRecyclerAdapter
         channelRecyclerAdapter.notifyDataSetChanged()
         recyclerView.addOnItemClickListener(object: OnItemClickListener {
             override fun onItemClicked(view: View, position: Int) {
-                val intent = Intent(this@MainActivity, ChatActivity::class.java)
+                //Get a list of participant data
                 val participantData: List<String> = extractRecipientData(listOfChannels[position])
+
+                //Form an intent and transition to ChatActivity with intent carrying extras
+                val intent = Intent(this@MainActivity, ChatActivity::class.java)
+                intent.putExtra("recipientId", participantData[0])
+                intent.putExtra("", participantData[1])
+                intent.putExtra("", participantData[2])
+                startActivity(intent)
             }
         })
     }
