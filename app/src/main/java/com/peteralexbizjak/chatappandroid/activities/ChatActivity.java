@@ -82,6 +82,9 @@ public class ChatActivity extends AppCompatActivity {
 
         //Set on click listener to sendMessageIcon
         sendMessageIconClickListener();
+
+        //Display chat messages if they exist
+        displayChatMessages();
     }
 
     private void setupRecyclerView() {
@@ -92,7 +95,7 @@ public class ChatActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private List<MessageModel> displayChatMessages() {
+    private void displayChatMessages() {
         databaseReference.child(channelIdGlobal).child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -109,8 +112,6 @@ public class ChatActivity extends AppCompatActivity {
                 Toast.makeText(ChatActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        return messageModelList;
     }
 
     private void setupChatArea() {

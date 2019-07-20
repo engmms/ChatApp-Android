@@ -99,8 +99,8 @@ class MainActivity : AppCompatActivity() {
                 //Form an intent and transition to ChatActivity with intent carrying extras
                 val intent = Intent(this@MainActivity, ChatActivity::class.java)
                 intent.putExtra("recipientId", participantData[0])
-                intent.putExtra("", participantData[1])
-                intent.putExtra("", participantData[2])
+                intent.putExtra("recipientDisplayName", participantData[1])
+                intent.putExtra("recipientPhotoUrl", participantData[2])
                 startActivity(intent)
             }
         })
