@@ -85,7 +85,7 @@ public class ChatActivity extends AppCompatActivity {
         sendMessageIconClickListener();
 
         //Display chat messages if they exist
-        displayChatMessages();
+        if (channelIdGlobal != null) displayChatMessages();
 
         //Setup RecyclerView
         setupRecyclerView();
