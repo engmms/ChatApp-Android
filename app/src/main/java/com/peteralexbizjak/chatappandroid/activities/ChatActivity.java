@@ -30,7 +30,7 @@ import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private static final int nonEmptyColor = Color.parseColor("#4bacb8");
+    private static final int nonEmptyColor = Color.parseColor("#f44336");
     private static final int emptyColor = Color.parseColor("#666666");
 
     private Toolbar toolbar;
