@@ -58,6 +58,7 @@ public class ChatActivity extends AppCompatActivity {
         recipientId = getIntent().getStringExtra("recipientId");
         recipientDisplayName = getIntent().getStringExtra("recipientDisplayName");
         recipientPhotoUrl = getIntent().getStringExtra("recipientPhotoUrl");
+        channelIdGlobal = getIntent().getStringExtra("channelId");
 
         //Get instance of FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -85,6 +86,9 @@ public class ChatActivity extends AppCompatActivity {
 
         //Display chat messages if they exist
         displayChatMessages();
+
+        //Setup RecyclerView
+        setupRecyclerView();
     }
 
     private void setupRecyclerView() {
@@ -96,7 +100,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void displayChatMessages() {
-        databaseReference.child(channelIdGlobal).child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(channelIdGlobal).child("chat").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messageModelList.clear();
@@ -142,8 +146,6 @@ public class ChatActivity extends AppCompatActivity {
                     //Generate message ID and set
                     messageId = databaseReference.push().getKey();
 
-                    setupRecyclerView();
-
                     //Generate hash map of reduced current user data
                     HashMap<String, List<String>> currentUserReducedData = new HashMap<>();
                     List<String> currentUserReduced = new ArrayList<>();
@@ -186,12 +188,13 @@ public class ChatActivity extends AppCompatActivity {
                         databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(
                                 messageId, Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid(), messageText
                         ));
+
+                        //Clear the EditText
+                        messageEditText.getText().clear();
                     } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
                 } else {
                     //Generate message ID and set
                     messageId = databaseReference.push().getKey();
-
-                    setupRecyclerView();
 
                     //Get message text
                     String messageText = messageEditText.getText().toString();
@@ -202,6 +205,9 @@ public class ChatActivity extends AppCompatActivity {
                         databaseReference.child(channelIdGlobal).child("chat").child(messageId).setValue(new MessageModel(
                                 messageId, Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid(), messageText
                         ));
+
+                        //Clear the EditText
+                        messageEditText.getText().clear();
                     } else Toast.makeText(this, "Error creating channel", Toast.LENGTH_SHORT).show();
                 }
 

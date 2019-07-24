@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("recipientId", participantData[0])
                 intent.putExtra("recipientDisplayName", participantData[1])
                 intent.putExtra("recipientPhotoUrl", participantData[2])
+                intent.putExtra("channelId", participantData[3])
                 startActivity(intent)
             }
         })
@@ -132,13 +133,14 @@ class MainActivity : AppCompatActivity() {
      * Index 0: recipient ID
      * Index 1: recipient display name
      * Index 2: recipient profile photo URL (as a string)
+     * Index 3: channel ID
      */
     private fun extractRecipientData(channelModel: ChannelModel): List<String> {
         var listOfRecipientData: List<String> = emptyList()
         channelModel.basicUserInfos?.forEach {
             if (!it.containsKey(firebaseAuth.currentUser?.uid)) {
                 val recipientId: String = it.keys.elementAt(0)
-                listOfRecipientData = listOf(recipientId, it[recipientId]!![0], it[recipientId]!![1])
+                listOfRecipientData = listOf(recipientId, it[recipientId]!![0], it[recipientId]!![1], channelModel.channelId)
             }
         }
         return listOfRecipientData
