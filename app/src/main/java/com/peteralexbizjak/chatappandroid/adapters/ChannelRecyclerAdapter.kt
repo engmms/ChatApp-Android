@@ -16,7 +16,8 @@ import com.squareup.picasso.Picasso
 
 class ChannelRecyclerAdapter(
     private val context: Context?,
-    private val channelList: List<ChannelModel>
+    private val channelList: List<ChannelModel>,
+    private val messagesCount: Long?
 ) : RecyclerView.Adapter<ChannelRecyclerAdapter.ViewHolder>() {
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -41,6 +42,8 @@ class ChannelRecyclerAdapter(
                 }
             }
         }
+
+        if (messagesCount != null) holder.channelNumberOfMessages.text = "$messagesCount messages in chat"
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {

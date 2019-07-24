@@ -85,7 +85,23 @@ public class ChatActivity extends AppCompatActivity {
         sendMessageIconClickListener();
 
         //Display chat messages if they exist
-        if (channelIdGlobal != null) displayChatMessages();
+        if (channelIdGlobal != null) {
+            displayChatMessages();
+
+            //Generate a hash map where key is the user ID and value is profile picture URL
+            HashMap<String, String> currentUserIdPhoto = new HashMap<>();
+            HashMap<String, String> recipientIdPhoto = new HashMap<>();
+            currentUserIdPhoto.put(
+                    Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid(),
+                    Objects.requireNonNull(firebaseAuth.getCurrentUser().getPhotoUrl()).toString()
+            );
+            recipientIdPhoto.put(recipientId, recipientPhotoUrl);
+
+            //Add the whole thing to the personProfilUrlHash
+            personProfilUrlHash.clear();
+            personProfilUrlHash.add(currentUserIdPhoto);
+            personProfilUrlHash.add(recipientIdPhoto);
+        }
 
         //Setup RecyclerView
         setupRecyclerView();

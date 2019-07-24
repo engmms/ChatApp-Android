@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
 
     private var listOfChannels: MutableList<ChannelModel> = ArrayList()
+    private var numberOfMessages: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +66,10 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (snapshot: DataSnapshot in dataSnapshot.children) {
                     val channel: ChannelModel? = snapshot.getValue(ChannelModel::class.java)
-                    channel!!.basicUserInfos.forEach {
+
+                    numberOfMessages = dataSnapshot.child(channel!!.channelId).child("chat").childrenCount
+
+                    channel.basicUserInfos.forEach {
                         for (key: String in it.keys) {
                             if (key == firebaseAuth.currentUser?.uid) listOfChannels.add(channel)
                             break
@@ -88,7 +92,7 @@ class MainActivity : AppCompatActivity() {
      * Display channels that a user is part of. Also handle on item click listeners on RecyclerView items
      */
     private fun displayChannels() {
-        val channelRecyclerAdapter = ChannelRecyclerAdapter(this, listOfChannels)
+        val channelRecyclerAdapter = ChannelRecyclerAdapter(this, listOfChannels, numberOfMessages)
         recyclerView.adapter = channelRecyclerAdapter
         channelRecyclerAdapter.notifyDataSetChanged()
         recyclerView.addOnItemClickListener(object: OnItemClickListener {
