@@ -41,7 +41,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun prepareFirebase() {
-
+        firebaseAuth = FirebaseAuth.getInstance()
     }
 
     private fun initializeViews() {
@@ -56,9 +56,7 @@ class ChatActivity : AppCompatActivity() {
 
         messageEditText.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(messageText: CharSequence?, start: Int, before: Int, count: Int) {
                 if (messageText.toString().isEmpty()) sendMessageIcon.setColorFilter(emptyColor)
                 else sendMessageIcon.setColorFilter(nonEmptyColor)
