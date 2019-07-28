@@ -1,4 +1,4 @@
-package com.peteralexbizjak.chatapp_android.activities
+package com.peteralexbizjak.chatapp_android.activities.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.peteralexbizjak.chatapp_android.activities.auth.WelcomeActivity
 import com.peteralexbizjak.chatapp_android.utils.ValidatorHelper
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseUser

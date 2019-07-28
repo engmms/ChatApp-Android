@@ -22,7 +22,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.peteralexbizjak.chatapp_android.MainActivity
 import com.peteralexbizjak.chatapp_android.R
-import com.peteralexbizjak.chatapp_android.activities.SignUpActivity
 import com.peteralexbizjak.chatapp_android.models.UserModel
 import com.peteralexbizjak.chatapp_android.utils.PermissionHelper
 
