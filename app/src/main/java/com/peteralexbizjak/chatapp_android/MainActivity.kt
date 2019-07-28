@@ -3,7 +3,7 @@ package com.peteralexbizjak.chatapp_android
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.peteralexbizjak.chatapp_android.activities.WelcomeActivity
+import com.peteralexbizjak.chatapp_android.activities.auth.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {
 
