@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.peteralexbizjak.chatapp_android.R
 
 class ChatActivity : AppCompatActivity() {
@@ -21,6 +23,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var sendMessageIcon: ImageView
 
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firebaseFirestore: FirebaseFirestore
 
     private lateinit var recipientId: String
     private lateinit var recipientDisplayName: String
@@ -42,6 +45,11 @@ class ChatActivity : AppCompatActivity() {
 
     private fun prepareFirebase() {
         firebaseAuth = FirebaseAuth.getInstance()
+        firebaseFirestore = FirebaseFirestore.getInstance()
+        firebaseFirestore.firestoreSettings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .setSslEnabled(true)
+            .build()
     }
 
     private fun initializeViews() {
