@@ -101,6 +101,21 @@
 
         </RelativeLayout>
 
+        <View
+            android:id="@+id/welcomeSeparator"
+            android:layout_below="@+id/welcomeAdditionalOptions"
+            android:background="@color/secondaryColor"
+            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"/>
+
+        <com.google.android.gms.common.SignInButton
+                android:id="@+id/welcomeGoogleSignIn"
+                android:layout_below="@+id/welcomeSeparator"
+                android:layout_marginTop="32dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
     </RelativeLayout>
 
 </RelativeLayout>
