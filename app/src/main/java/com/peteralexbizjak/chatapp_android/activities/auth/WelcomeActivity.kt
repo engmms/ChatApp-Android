@@ -22,9 +22,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.peteralexbizjak.chatapp_android.MainActivity
 import com.peteralexbizjak.chatapp_android.R
+import com.peteralexbizjak.chatapp_android.activities.SignUpActivity
 import com.peteralexbizjak.chatapp_android.models.UserModel
 import com.peteralexbizjak.chatapp_android.utils.PermissionHelper
-import com.peteralexbizjak.chatapp_android.utils.ValidatorHelper
 
 class WelcomeActivity : AppCompatActivity() {
 
@@ -60,7 +60,10 @@ class WelcomeActivity : AppCompatActivity() {
         googleSignIn.setOnClickListener { googleSignIn() }
 
         //Prepare password-based sign in process
-        login.setOnClickListener {}
+        login.setOnClickListener { passwordSignIn() }
+
+        //Transition to SignUpActivity
+        signUp.setOnClickListener { startActivity(Intent(this@WelcomeActivity, SignUpActivity::class.java)) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
