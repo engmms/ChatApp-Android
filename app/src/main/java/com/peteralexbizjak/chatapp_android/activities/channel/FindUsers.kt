@@ -50,8 +50,8 @@ class FindUsers : AppCompatActivity() {
 
     private fun initializeViews() {
         toolbar = findViewById(R.id.findUserToolbar)
-        toolbar.setNavigationOnClickListener { startActivity(Intent(this@FindUsers, MainActivity::class.java)) }
         setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener { startActivity(Intent(this@FindUsers, MainActivity::class.java)) }
 
         searchIcon = findViewById(R.id.findUserSearchIcon)
         searchField = findViewById(R.id.findUserSearchField)
