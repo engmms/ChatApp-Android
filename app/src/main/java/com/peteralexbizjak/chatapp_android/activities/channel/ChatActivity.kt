@@ -57,7 +57,6 @@ class ChatActivity : AppCompatActivity() {
         firebaseFirestore = FirebaseFirestore.getInstance()
         firebaseFirestore.firestoreSettings = FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)
-            .setSslEnabled(true)
             .build()
     }
 
