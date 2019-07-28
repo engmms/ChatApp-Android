@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.peteralexbizjak.chatapp_android.MainActivity
 import com.peteralexbizjak.chatapp_android.R
 import com.peteralexbizjak.chatapp_android.adapters.UserRecyclerAdapter
 import com.peteralexbizjak.chatapp_android.interfaces.OnItemClickListener
@@ -31,7 +32,6 @@ class FindUsers : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
 
     private lateinit var recyclerViewAdapter: UserRecyclerAdapter
-    private var listOfUsers: List<UserModel>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +40,6 @@ class FindUsers : AppCompatActivity() {
         //Prepare Firebase and initialize views
         prepareFirebase()
         initializeViews()
-
-        //Prepare RecyclerView and text change listener
-        listOfUsers?.let { prepareRecyclerView(it) }
-        setupTextChangeListener()
     }
 
     private fun prepareFirebase() {
@@ -54,54 +50,32 @@ class FindUsers : AppCompatActivity() {
 
     private fun initializeViews() {
         toolbar = findViewById(R.id.findUserToolbar)
+        toolbar.setNavigationOnClickListener { startActivity(Intent(this@FindUsers, MainActivity::class.java)) }
         setSupportActionBar(toolbar)
 
         searchIcon = findViewById(R.id.findUserSearchIcon)
         searchField = findViewById(R.id.findUserSearchField)
+
         recyclerView = findViewById(R.id.findUserRecyclerView)
-    }
-
-    private fun prepareRecyclerView(listOfUsers: List<UserModel>) {
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerViewAdapter = UserRecyclerAdapter(this, listOfUsers)
-        recyclerView.adapter = recyclerViewAdapter
+
+        setupEditTextChangeListener()
     }
 
-    private fun setupTextChangeListener() {
+    private fun setupEditTextChangeListener() {
         searchField.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                if (!s.isNullOrEmpty()) {
-                    listOfUsers = searchForUsers(s.toString())
-                    displayFoundUsers(listOfUsers as MutableList<UserModel>)
-                }
+                if (!s.isNullOrBlank()) displayFoundUsers(searchForUsers(s.toString()))
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
 
-    private fun searchForUsers(searchQuery: String): MutableList<UserModel> {
-        searchQuery.toLowerCase()
-        val listOfUserModels: MutableList<UserModel> = ArrayList()
-        databaseReference.addValueEventListener(object: ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@FindUsers, "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (snapshot: DataSnapshot in dataSnapshot.children) {
-                    val userModel: UserModel = snapshot.getValue(UserModel::class.java)!!
-                    if (
-                        userModel.uid != firebaseAuth.currentUser!!.uid &&
-                        (userModel.displayName.toLowerCase().contains(searchQuery) || userModel.email.toLowerCase().contains(searchQuery))
-                    ) listOfUserModels.add(userModel)
-                }
-            }
-        })
-        return listOfUserModels
-    }
-
-    private fun displayFoundUsers(listOfUsers: List<UserModel>) {
+    private fun displayFoundUsers(listOfUsers: MutableList<UserModel>) {
+        val recyclerViewAdapter = UserRecyclerAdapter(this, listOfUsers)
+        recyclerView.adapter = recyclerViewAdapter
         recyclerViewAdapter.notifyDataSetChanged()
         recyclerView.addOnItemClickListener(object: OnItemClickListener {
             override fun onItemClicked(view: View, position: Int) {
@@ -112,6 +86,33 @@ class FindUsers : AppCompatActivity() {
                 startActivity(intent)
             }
         })
+    }
+
+    private fun searchForUsers(searchQuery: String): MutableList<UserModel> {
+        val userModelList: MutableList<UserModel> = ArrayList()
+
+        searchQuery.toLowerCase()
+
+        databaseReference.addValueEventListener(object: ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@FindUsers, "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (snapshot: DataSnapshot in dataSnapshot.children) {
+                    val user: UserModel = snapshot.getValue(UserModel::class.java)!!
+                    if (
+                        user.uid != firebaseAuth.currentUser!!.uid &&
+                        (
+                            user.displayName.toLowerCase().contains(searchQuery) ||
+                            user.email.toLowerCase().contains(searchQuery)
+                        )
+                    ) userModelList.add(user)
+                }
+            }
+        })
+
+        return userModelList
     }
 
     private fun RecyclerView.addOnItemClickListener(onClickListener: OnItemClickListener) {

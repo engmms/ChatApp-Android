@@ -24,6 +24,7 @@
         <activity android:name=".activities.auth.WelcomeActivity"/>
         <activity android:name=".activities.auth.SignUpActivity"/>
         <activity android:name=".activities.channel.ChatActivity"/>
+        <activity android:name=".activities.channel.FindUsers"/>
     </application>
 
 </manifest>

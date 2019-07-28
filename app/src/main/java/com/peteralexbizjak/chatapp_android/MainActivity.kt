@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
 
-    private lateinit var toolbar: Toolbar
+    private lateinit var toolbar: RelativeLayout
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var floatingActionButton: FloatingActionButton
@@ -54,8 +55,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeViews() {
         toolbar = findViewById(R.id.mainToolbar)
-        setSupportActionBar(toolbar)
-
         recyclerView = findViewById(R.id.mainRecyclerView)
         floatingActionButton = findViewById(R.id.mainFab)
 
