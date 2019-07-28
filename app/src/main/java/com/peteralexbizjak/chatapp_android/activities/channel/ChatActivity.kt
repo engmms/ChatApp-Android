@@ -14,6 +14,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.peteralexbizjak.chatapp_android.R
+import com.peteralexbizjak.chatapp_android.models.ChatModel
+import com.peteralexbizjak.chatapp_android.models.MessageModel
+import com.peteralexbizjak.chatapp_android.models.ParticipantModel
+import java.util.*
+import kotlin.collections.HashMap
 
 class ChatActivity : AppCompatActivity() {
 
@@ -29,6 +34,8 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var recipientDisplayName: String
     private lateinit var recipientPhotoUrl: String
 
+    private var chatId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
@@ -37,6 +44,8 @@ class ChatActivity : AppCompatActivity() {
         recipientId = intent.getStringExtra("recipientId")
         recipientDisplayName = intent.getStringExtra("recipientDisplayName")
         recipientPhotoUrl = intent.getStringExtra("recipientPhotoUrl")
+
+        chatId = intent.getStringExtra("chatId")
 
         //Prepare Firebase and initialize views
         prepareFirebase()
@@ -70,6 +79,56 @@ class ChatActivity : AppCompatActivity() {
                 else sendMessageIcon.setColorFilter(nonEmptyColor)
             }
         })
+
+        sendMessageIcon.setOnClickListener { sendMessage(messageEditText.text.toString()) }
+    }
+
+    private fun sendMessage(message: String) {
+        if (chatId == null) {
+            //Handle creating current user structure
+            val currentUserId: String? = firebaseAuth.currentUser!!.uid
+            val currenctUserAsParticipant = ParticipantModel(firebaseAuth.currentUser!!.displayName, firebaseAuth.currentUser!!.photoUrl.toString())
+            val currentUserAsHashMap: HashMap<String, ParticipantModel> = HashMap()
+            currentUserAsHashMap[currentUserId!!] = currenctUserAsParticipant
+
+            //Handle creating recipient user structure
+            val recipientUserAsParticipant = ParticipantModel(recipientDisplayName, recipientPhotoUrl)
+            val recipientUserAsHashMap: HashMap<String, ParticipantModel> = HashMap()
+            recipientUserAsHashMap[recipientId] = recipientUserAsParticipant
+
+            //Create a list of HashMaps
+            val hashmapsList: List<HashMap<String, ParticipantModel>> = arrayListOf(currentUserAsHashMap, recipientUserAsHashMap)
+
+            //Create a chat object and update chatId
+            chatId = "$currentUserId???$recipientId"
+            val chatModel = ChatModel(chatId!!, hashmapsList)
+
+            //Add data to Firestore
+            firebaseFirestore
+                .collection("chats")
+                .document(chatId!!)
+                .set(chatModel)
+
+            //Now create a MessageModel and store it to database as well
+            val messageId: String = Date().time.toString()
+            val messageModel = MessageModel(messageId, message, currentUserId)
+            firebaseFirestore
+                .collection("chats")
+                .document(chatId!!)
+                .collection("messages")
+                .document(messageId)
+                .set(messageModel)
+        } else {
+            //Simply create a MessageModel and store it to database
+            val messageId: String = Date().time.toString()
+            val messageModel = MessageModel(messageId, message, firebaseAuth.currentUser!!.uid)
+            firebaseFirestore
+                .collection("chats")
+                .document(chatId!!)
+                .collection("messages")
+                .document(messageId)
+                .set(messageModel)
+        }
     }
 
     companion object {
