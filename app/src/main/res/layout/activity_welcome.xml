@@ -6,6 +6,7 @@
         android:layout_height="match_parent">
 
     <RelativeLayout
+            android:id="@+id/welcomeInnerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true">
@@ -67,7 +68,7 @@
                 android:text="Login"
                 android:backgroundTint="@color/secondaryColor"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="48dp"/>
 
         <RelativeLayout
                 android:id="@+id/welcomeAdditionalOptions"
