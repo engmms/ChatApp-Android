@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".activities.auth.WelcomeActivity"/>
         <activity android:name=".activities.auth.SignUpActivity"/>
+        <activity android:name=".activities.channel.ChatActivity"/>
     </application>
 
 </manifest>

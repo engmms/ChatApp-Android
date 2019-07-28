@@ -1,14 +1,23 @@
 package com.peteralexbizjak.chatapp_android.activities.channel
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.peteralexbizjak.chatapp_android.R
+import com.peteralexbizjak.chatapp_android.adapters.UserRecyclerAdapter
+import com.peteralexbizjak.chatapp_android.interfaces.OnItemClickListener
+import com.peteralexbizjak.chatapp_android.models.UserModel
 
 class FindUsers : AppCompatActivity() {
 
@@ -21,7 +30,103 @@ class FindUsers : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
 
+    private lateinit var recyclerViewAdapter: UserRecyclerAdapter
+    private var listOfUsers: List<UserModel>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_find_users)
+
+        //Prepare Firebase and initialize views
+        prepareFirebase()
+        initializeViews()
+
+        //Prepare RecyclerView and text change listener
+        listOfUsers?.let { prepareRecyclerView(it) }
+        setupTextChangeListener()
+    }
+
+    private fun prepareFirebase() {
+        firebaseAuth = FirebaseAuth.getInstance()
+        firebaseDatabase = FirebaseDatabase.getInstance()
+        databaseReference = firebaseDatabase.reference.child("users")
+    }
+
+    private fun initializeViews() {
+        toolbar = findViewById(R.id.findUserToolbar)
+        setSupportActionBar(toolbar)
+
+        searchIcon = findViewById(R.id.findUserSearchIcon)
+        searchField = findViewById(R.id.findUserSearchField)
+        recyclerView = findViewById(R.id.findUserRecyclerView)
+    }
+
+    private fun prepareRecyclerView(listOfUsers: List<UserModel>) {
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerViewAdapter = UserRecyclerAdapter(this, listOfUsers)
+        recyclerView.adapter = recyclerViewAdapter
+    }
+
+    private fun setupTextChangeListener() {
+        searchField.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (!s.isNullOrEmpty()) {
+                    listOfUsers = searchForUsers(s.toString())
+                    displayFoundUsers(listOfUsers as MutableList<UserModel>)
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+    }
+
+    private fun searchForUsers(searchQuery: String): MutableList<UserModel> {
+        searchQuery.toLowerCase()
+        val listOfUserModels: MutableList<UserModel> = ArrayList()
+        databaseReference.addValueEventListener(object: ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@FindUsers, "Database error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (snapshot: DataSnapshot in dataSnapshot.children) {
+                    val userModel: UserModel = snapshot.getValue(UserModel::class.java)!!
+                    if (
+                        userModel.uid != firebaseAuth.currentUser!!.uid &&
+                        (userModel.displayName.toLowerCase().contains(searchQuery) || userModel.email.toLowerCase().contains(searchQuery))
+                    ) listOfUserModels.add(userModel)
+                }
+            }
+        })
+        return listOfUserModels
+    }
+
+    private fun displayFoundUsers(listOfUsers: List<UserModel>) {
+        recyclerViewAdapter.notifyDataSetChanged()
+        recyclerView.addOnItemClickListener(object: OnItemClickListener {
+            override fun onItemClicked(view: View, position: Int) {
+                val intent = Intent(this@FindUsers, ChatActivity::class.java)
+                intent.putExtra("recipientId", listOfUsers[position].uid)
+                intent.putExtra("recipientDisplayName", listOfUsers[position].displayName)
+                intent.putExtra("recipientPhotoUrl", listOfUsers[position].photoUrl)
+                startActivity(intent)
+            }
+        })
+    }
+
+    private fun RecyclerView.addOnItemClickListener(onClickListener: OnItemClickListener) {
+        this.addOnChildAttachStateChangeListener(object: RecyclerView.OnChildAttachStateChangeListener {
+
+            override fun onChildViewDetachedFromWindow(view: View) {
+                view.setOnClickListener(null)
+            }
+
+            override fun onChildViewAttachedToWindow(view: View) {
+                view.setOnClickListener {
+                    val holder = getChildViewHolder(view)
+                    onClickListener.onItemClicked(view, holder.adapterPosition)
+                }
+            }
+        })
     }
 }
