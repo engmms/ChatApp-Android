@@ -14,10 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.model.Document
 import com.peteralexbizjak.chatapp_android.R
 import com.peteralexbizjak.chatapp_android.adapters.MessageRecyclerAdapter
 import com.peteralexbizjak.chatapp_android.models.firestore.ChatModel
@@ -47,15 +45,6 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var adapter: MessageRecyclerAdapter
     private lateinit var messageModelList: MutableList<MessageModel>
 
-    override fun onStart() {
-        super.onStart()
-        if (chatId != null && latestMessageId != null) {
-            //Initialize message model list here and begin listening for changes
-            messageModelList = ArrayList()
-            fetchMessages()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
@@ -64,7 +53,6 @@ class ChatActivity : AppCompatActivity() {
         recipientId = intent.getStringExtra("recipientId")
         recipientDisplayName = intent.getStringExtra("recipientDisplayName")
         recipientPhotoUrl = intent.getStringExtra("recipientPhotoUrl")
-
         chatId = intent.getStringExtra("chatId")
 
         //Prepare Firebase and initialize views
@@ -91,6 +79,7 @@ class ChatActivity : AppCompatActivity() {
         linearLayoutManager.stackFromEnd = true
         recyclerView.layoutManager = linearLayoutManager
         if (chatId != null) {
+            messageModelList = ArrayList()
             adapter = MessageRecyclerAdapter(this@ChatActivity, messageModelList)
             recyclerView.adapter = adapter
         }
