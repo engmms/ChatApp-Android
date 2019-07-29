@@ -13,7 +13,7 @@
         <TextView
                 android:id="@+id/signupToolbarTitle"
                 android:text="Back"
-                android:textColor="@color/secondaryDarkColor"
+                android:textColor="@color/primaryTextColor"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
@@ -32,8 +32,9 @@
                 android:id="@+id/signupTitle"
                 android:text="Sign up"
                 android:textStyle="bold"
-                android:textColor="@color/secondaryDarkColor"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/primaryTextColor"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -41,15 +42,15 @@
                 android:id="@+id/signupSubtitle"
                 android:layout_below="@id/signupTitle"
                 android:text="Create a new account"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="@color/secondaryDarkColor"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="@color/primaryTextColor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/signupUsername"
                 android:layout_below="@id/signupSubtitle"
-                android:layout_marginTop="56dp"
+                android:layout_marginTop="48dp"
                 android:hint="Username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

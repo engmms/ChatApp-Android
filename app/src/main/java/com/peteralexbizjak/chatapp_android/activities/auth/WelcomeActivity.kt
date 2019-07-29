@@ -33,9 +33,10 @@ class WelcomeActivity : AppCompatActivity() {
 
     private lateinit var email: TextInputEditText
     private lateinit var password: TextInputEditText
-    private lateinit var login: MaterialButton
 
-    private lateinit var signUp: TextView
+    private lateinit var login: MaterialButton
+    private lateinit var signUp: MaterialButton
+
     private lateinit var forgotPassword: TextView
 
     private lateinit var googleSignIn: SignInButton
@@ -141,10 +142,11 @@ class WelcomeActivity : AppCompatActivity() {
     private fun initializeViews() {
         email = findViewById(R.id.welcomeEmailInput)
         password = findViewById(R.id.welcomePasswordInput)
-        login = findViewById(R.id.welcomeLoginButton)
 
-        signUp = findViewById(R.id.welcomeSignUp)
-        forgotPassword = findViewById(R.id.welcomeForgotPassword)
+        login = findViewById(R.id.welcomeLoginButton)
+        signUp = findViewById(R.id.welcomeSignupButton)
+
+        forgotPassword = findViewById(R.id.welcomeAdditionalOptions)
 
         googleSignIn = findViewById(R.id.welcomeGoogleSignIn)
     }
