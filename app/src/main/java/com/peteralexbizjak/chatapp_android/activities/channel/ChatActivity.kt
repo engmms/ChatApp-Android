@@ -13,9 +13,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.database.core.ChildEventRegistration
+import com.google.firebase.firestore.*
+import com.peteralexbizjak.chatapp_android.MainActivity
 import com.peteralexbizjak.chatapp_android.R
 import com.peteralexbizjak.chatapp_android.adapters.MessageRecyclerAdapter
 import com.peteralexbizjak.chatapp_android.models.firestore.ChatModel
@@ -45,6 +45,8 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var adapter: MessageRecyclerAdapter
     private lateinit var messageModelList: MutableList<MessageModel>
 
+    private var registration: ListenerRegistration? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
@@ -60,19 +62,21 @@ class ChatActivity : AppCompatActivity() {
         initializeViews()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        registration?.remove()
+    }
+
     private fun prepareFirebase() {
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseFirestore = FirebaseFirestore.getInstance()
-        firebaseFirestore.firestoreSettings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
-            .build()
     }
 
     private fun initializeViews() {
         toolbar = findViewById(R.id.chatToolbar)
         setSupportActionBar(toolbar)
         toolbar.title = recipientDisplayName
-        toolbar.setNavigationOnClickListener { startActivity(Intent(this@ChatActivity, FindUsers::class.java)) }
+        toolbar.setNavigationOnClickListener { startActivity(Intent(this@ChatActivity, MainActivity::class.java)) }
 
         recyclerView = findViewById(R.id.chatRecyclerView)
         val linearLayoutManager = LinearLayoutManager(this)
@@ -82,6 +86,7 @@ class ChatActivity : AppCompatActivity() {
             messageModelList = ArrayList()
             adapter = MessageRecyclerAdapter(this@ChatActivity, messageModelList)
             recyclerView.adapter = adapter
+            fetchMessages()
         }
 
         messageEditText = findViewById(R.id.chatEditText)
@@ -153,10 +158,10 @@ class ChatActivity : AppCompatActivity() {
             messageModelList = ArrayList()
             adapter = MessageRecyclerAdapter(this@ChatActivity, messageModelList)
             recyclerView.adapter = adapter
+            fetchMessages()
 
             //Clear the EditText + listen for changes in the database
             messageEditText.text.clear()
-            fetchMessages()
         } else {
             //Simply create a MessageModel and store it to database
             val messageId: String = Date().time.toString()
@@ -182,26 +187,24 @@ class ChatActivity : AppCompatActivity() {
 
             //Clear the EditText + listen for changes in the database
             messageEditText.text.clear()
-            fetchMessages()
         }
     }
 
     private fun fetchMessages() {
-        val documentReference: DocumentReference = firebaseFirestore
+        val query: CollectionReference = firebaseFirestore
             .collection("chats")
             .document(chatId!!)
             .collection("messages")
-            .document(latestMessageId!!)
-        documentReference.addSnapshotListener { documentSnapshot, exception ->
-            if (exception != null) Log.d(TAG, "Error happened reading database data", exception)
-            if (documentSnapshot != null && documentSnapshot.exists()) {
-                documentSnapshot.toObject(MessageModel::class.java)?.let {
-                    messageModelList.add(it)
-                    Log.d(TAG, "Document snapshot includes this latest message: ${it.messangeContents}")
+        registration = query.addSnapshotListener { snapshot, exception ->
+            if (exception != null) Log.d(TAG, "Exception occurred", exception)
+            if (snapshot != null) {
+                messageModelList.clear()
+                for (document: DocumentSnapshot in snapshot.documents) {
+                    val messageModel: MessageModel? = document.toObject(MessageModel::class.java)
+                    messageModel?.let { messageModelList.add(it) }
+                    adapter.notifyDataSetChanged()
                 }
-                adapter.notifyDataSetChanged()
-                Log.d(TAG, "Database update: messageModeList size: ${messageModelList.size}")
-            } else Log.d(TAG, "DocumentSnapshot is either null or doesn't exist")
+            }
         }
     }
 
