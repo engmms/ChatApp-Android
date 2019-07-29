@@ -22,7 +22,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.peteralexbizjak.chatapp_android.MainActivity
 import com.peteralexbizjak.chatapp_android.R
-import com.peteralexbizjak.chatapp_android.models.UserModel
+import com.peteralexbizjak.chatapp_android.models.general.UserModel
 import com.peteralexbizjak.chatapp_android.utils.PermissionHelper
 
 class WelcomeActivity : AppCompatActivity() {
@@ -112,7 +112,14 @@ class WelcomeActivity : AppCompatActivity() {
             firebaseAuth.signInWithCredential(credential).addOnCompleteListener{
                 if (it.isSuccessful) {
                     val user: FirebaseUser = it.result!!.user
-                    databaseReference.child(user.uid).setValue(UserModel(user.uid, user.displayName, user.email, user.photoUrl.toString()))
+                    databaseReference.child(user.uid).setValue(
+                        UserModel(
+                            user.uid,
+                            user.displayName,
+                            user.email,
+                            user.photoUrl.toString()
+                        )
+                    )
                     startActivity(Intent(this@WelcomeActivity, MainActivity::class.java))
                 }
             }

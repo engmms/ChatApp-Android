@@ -14,7 +14,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseUser
 import com.peteralexbizjak.chatapp_android.MainActivity
 import com.peteralexbizjak.chatapp_android.R
-import com.peteralexbizjak.chatapp_android.models.UserModel
+import com.peteralexbizjak.chatapp_android.models.general.UserModel
 
 
 class SignUpActivity : AppCompatActivity() {
@@ -73,12 +73,14 @@ class SignUpActivity : AppCompatActivity() {
                             val firebaseUser: FirebaseUser = it.result!!.user
                             databaseReference
                                 .child(firebaseUser.uid)
-                                .setValue(UserModel(
-                                    firebaseUser.uid,
-                                    displayName.text.toString(),
-                                    email.text.toString(),
-                                    null
-                                ))
+                                .setValue(
+                                    UserModel(
+                                        firebaseUser.uid,
+                                        displayName.text.toString(),
+                                        email.text.toString(),
+                                        null
+                                    )
+                                )
                             startActivity(Intent(this@SignUpActivity, MainActivity::class.java))
                         }
                 } else displayCustomToast("Display name cannot be empty")

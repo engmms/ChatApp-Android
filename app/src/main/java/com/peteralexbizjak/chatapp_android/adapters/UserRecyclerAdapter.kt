@@ -12,7 +12,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.peteralexbizjak.chatapp_android.R
 import com.peteralexbizjak.chatapp_android.interfaces.OnItemClickListener
-import com.peteralexbizjak.chatapp_android.models.UserModel
+import com.peteralexbizjak.chatapp_android.models.general.UserModel
 import com.peteralexbizjak.chatapp_android.utils.CircleTransform
 import com.squareup.picasso.Picasso
 

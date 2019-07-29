@@ -1,4 +1,4 @@
-package com.peteralexbizjak.chatapp_android.models;
+package com.peteralexbizjak.chatapp_android.models.firestore;
 
 public class ParticipantModel {
     String displayName;

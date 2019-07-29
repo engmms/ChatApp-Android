@@ -1,4 +1,4 @@
-package com.peteralexbizjak.chatapp_android.models;
+package com.peteralexbizjak.chatapp_android.models.general;
 
 public class UserModel {
     String uid;

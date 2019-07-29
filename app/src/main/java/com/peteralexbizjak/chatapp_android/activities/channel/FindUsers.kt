@@ -18,7 +18,7 @@ import com.peteralexbizjak.chatapp_android.MainActivity
 import com.peteralexbizjak.chatapp_android.R
 import com.peteralexbizjak.chatapp_android.adapters.UserRecyclerAdapter
 import com.peteralexbizjak.chatapp_android.interfaces.OnItemClickListener
-import com.peteralexbizjak.chatapp_android.models.UserModel
+import com.peteralexbizjak.chatapp_android.models.general.UserModel
 
 class FindUsers : AppCompatActivity() {
 
@@ -31,7 +31,7 @@ class FindUsers : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
 
-    private lateinit var recyclerViewAdapter: UserRecyclerAdapter
+    val userModelList: MutableList<UserModel> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +89,6 @@ class FindUsers : AppCompatActivity() {
     }
 
     private fun searchForUsers(searchQuery: String): MutableList<UserModel> {
-        val userModelList: MutableList<UserModel> = ArrayList()
-
         searchQuery.toLowerCase()
 
         databaseReference.addValueEventListener(object: ValueEventListener {
@@ -99,6 +97,7 @@ class FindUsers : AppCompatActivity() {
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                userModelList.clear()
                 for (snapshot: DataSnapshot in dataSnapshot.children) {
                     val user: UserModel = snapshot.getValue(UserModel::class.java)!!
                     if (

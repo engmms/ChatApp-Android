@@ -5,18 +5,23 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.peteralexbizjak.chatapp_android.R
-import com.peteralexbizjak.chatapp_android.models.ChatModel
-import com.peteralexbizjak.chatapp_android.models.MessageModel
-import com.peteralexbizjak.chatapp_android.models.ParticipantModel
+import com.peteralexbizjak.chatapp_android.adapters.MessageRecyclerAdapter
+import com.peteralexbizjak.chatapp_android.models.firestore.ChatModel
+import com.peteralexbizjak.chatapp_android.models.firestore.MessageModel
+import com.peteralexbizjak.chatapp_android.models.firestore.ParticipantModel
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -35,6 +40,18 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var recipientPhotoUrl: String
 
     private var chatId: String? = null
+
+    private lateinit var adapter: MessageRecyclerAdapter
+    private lateinit var messageModelList: List<MessageModel>
+
+    override fun onStart() {
+        super.onStart()
+        if (chatId != null) {
+            val documentReference: DocumentReference = firebaseFirestore
+                .collection("chats")
+                .document(chatId!!)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +84,10 @@ class ChatActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { startActivity(Intent(this@ChatActivity, FindUsers::class.java)) }
 
         recyclerView = findViewById(R.id.chatRecyclerView)
+        val linearLayoutManager = LinearLayoutManager(this)
+        linearLayoutManager.stackFromEnd = true
+        recyclerView.layoutManager = linearLayoutManager
+
         messageEditText = findViewById(R.id.chatEditText)
         sendMessageIcon = findViewById(R.id.chatSendMessage)
 
@@ -86,12 +107,18 @@ class ChatActivity : AppCompatActivity() {
         if (chatId == null) {
             //Handle creating current user structure
             val currentUserId: String? = firebaseAuth.currentUser!!.uid
-            val currenctUserAsParticipant = ParticipantModel(firebaseAuth.currentUser!!.displayName, firebaseAuth.currentUser!!.photoUrl.toString())
+            val currenctUserAsParticipant = ParticipantModel(
+                firebaseAuth.currentUser!!.displayName,
+                firebaseAuth.currentUser!!.photoUrl.toString()
+            )
             val currentUserAsHashMap: HashMap<String, ParticipantModel> = HashMap()
             currentUserAsHashMap[currentUserId!!] = currenctUserAsParticipant
 
             //Handle creating recipient user structure
-            val recipientUserAsParticipant = ParticipantModel(recipientDisplayName, recipientPhotoUrl)
+            val recipientUserAsParticipant = ParticipantModel(
+                recipientDisplayName,
+                recipientPhotoUrl
+            )
             val recipientUserAsHashMap: HashMap<String, ParticipantModel> = HashMap()
             recipientUserAsHashMap[recipientId] = recipientUserAsParticipant
 
@@ -110,28 +137,47 @@ class ChatActivity : AppCompatActivity() {
 
             //Now create a MessageModel and store it to database as well
             val messageId: String = Date().time.toString()
-            val messageModel = MessageModel(messageId, message, currentUserId)
+            val messageModel =
+                MessageModel(messageId, message, currentUserId, firebaseAuth.currentUser!!.photoUrl.toString())
             firebaseFirestore
                 .collection("chats")
                 .document(chatId!!)
                 .collection("messages")
                 .document(messageId)
                 .set(messageModel)
+                .addOnCompleteListener {
+                    when {
+                        it.isSuccessful -> Log.d(TAG, "Channel and message stored to database")
+                        else -> Log.d(TAG, "Channel and message were NOT stored to the database")
+                    }
+                }
         } else {
             //Simply create a MessageModel and store it to database
             val messageId: String = Date().time.toString()
-            val messageModel = MessageModel(messageId, message, firebaseAuth.currentUser!!.uid)
+            val messageModel = MessageModel(
+                messageId,
+                message,
+                firebaseAuth.currentUser!!.uid,
+                firebaseAuth.currentUser!!.photoUrl.toString()
+            )
             firebaseFirestore
                 .collection("chats")
                 .document(chatId!!)
                 .collection("messages")
                 .document(messageId)
                 .set(messageModel)
+                .addOnCompleteListener {
+                    when {
+                        it.isSuccessful -> Log.d(TAG, "Message stored to database")
+                        else -> Log.d(TAG, "Message was NOT stored to the database")
+                    }
+                }
         }
     }
 
     companion object {
         private val nonEmptyColor: Int = Color.parseColor("#f44336")
         private val emptyColor: Int = Color.parseColor("#666666")
+        private const val TAG = "chat-activity"
     }
 }
