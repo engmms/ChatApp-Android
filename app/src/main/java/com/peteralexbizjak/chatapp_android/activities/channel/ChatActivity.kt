@@ -17,12 +17,14 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.model.Document
 import com.peteralexbizjak.chatapp_android.R
 import com.peteralexbizjak.chatapp_android.adapters.MessageRecyclerAdapter
 import com.peteralexbizjak.chatapp_android.models.firestore.ChatModel
 import com.peteralexbizjak.chatapp_android.models.firestore.MessageModel
 import com.peteralexbizjak.chatapp_android.models.firestore.ParticipantModel
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class ChatActivity : AppCompatActivity() {
@@ -40,16 +42,17 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var recipientPhotoUrl: String
 
     private var chatId: String? = null
+    private var latestMessageId: String? = null
 
     private lateinit var adapter: MessageRecyclerAdapter
-    private lateinit var messageModelList: List<MessageModel>
+    private lateinit var messageModelList: MutableList<MessageModel>
 
     override fun onStart() {
         super.onStart()
-        if (chatId != null) {
-            val documentReference: DocumentReference = firebaseFirestore
-                .collection("chats")
-                .document(chatId!!)
+        if (chatId != null && latestMessageId != null) {
+            //Initialize message model list here and begin listening for changes
+            messageModelList = ArrayList()
+            fetchMessages()
         }
     }
 
@@ -87,6 +90,10 @@ class ChatActivity : AppCompatActivity() {
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.stackFromEnd = true
         recyclerView.layoutManager = linearLayoutManager
+        if (chatId != null) {
+            adapter = MessageRecyclerAdapter(this@ChatActivity, messageModelList)
+            recyclerView.adapter = adapter
+        }
 
         messageEditText = findViewById(R.id.chatEditText)
         sendMessageIcon = findViewById(R.id.chatSendMessage)
@@ -137,6 +144,7 @@ class ChatActivity : AppCompatActivity() {
 
             //Now create a MessageModel and store it to database as well
             val messageId: String = Date().time.toString()
+            latestMessageId = messageId
             val messageModel =
                 MessageModel(messageId, message, currentUserId, firebaseAuth.currentUser!!.photoUrl.toString())
             firebaseFirestore
@@ -151,9 +159,19 @@ class ChatActivity : AppCompatActivity() {
                         else -> Log.d(TAG, "Channel and message were NOT stored to the database")
                     }
                 }
+
+            //Initialize RecyclerView adapter and the ModelMessage list
+            messageModelList = ArrayList()
+            adapter = MessageRecyclerAdapter(this@ChatActivity, messageModelList)
+            recyclerView.adapter = adapter
+
+            //Clear the EditText + listen for changes in the database
+            messageEditText.text.clear()
+            fetchMessages()
         } else {
             //Simply create a MessageModel and store it to database
             val messageId: String = Date().time.toString()
+            latestMessageId = messageId
             val messageModel = MessageModel(
                 messageId,
                 message,
@@ -172,6 +190,29 @@ class ChatActivity : AppCompatActivity() {
                         else -> Log.d(TAG, "Message was NOT stored to the database")
                     }
                 }
+
+            //Clear the EditText + listen for changes in the database
+            messageEditText.text.clear()
+            fetchMessages()
+        }
+    }
+
+    private fun fetchMessages() {
+        val documentReference: DocumentReference = firebaseFirestore
+            .collection("chats")
+            .document(chatId!!)
+            .collection("messages")
+            .document(latestMessageId!!)
+        documentReference.addSnapshotListener { documentSnapshot, exception ->
+            if (exception != null) Log.d(TAG, "Error happened reading database data", exception)
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                documentSnapshot.toObject(MessageModel::class.java)?.let {
+                    messageModelList.add(it)
+                    Log.d(TAG, "Document snapshot includes this latest message: ${it.messangeContents}")
+                }
+                adapter.notifyDataSetChanged()
+                Log.d(TAG, "Database update: messageModeList size: ${messageModelList.size}")
+            } else Log.d(TAG, "DocumentSnapshot is either null or doesn't exist")
         }
     }
 
