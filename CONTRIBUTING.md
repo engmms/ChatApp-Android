@@ -1,0 +1,1 @@
+Contributions to the projects are welcomed. In majority of cases I am looking for people willing to report bugs or propose enhancements to the existing code. Application is not designed well at the moment, so any help with visuals would be very appreciated.
