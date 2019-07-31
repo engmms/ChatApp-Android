@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity() {
             if (it.isSuccessful) {
                 Log.d(TAG, "...query is successful")
 
-                //TODO: discriminate between chats user has access to!!!!!!!!!
                 for (documentSnapshot: DocumentSnapshot in it.result!!.documents)
                     documentSnapshot.toObject(ChatModel::class.java)?.let { chatModelObject ->
                         chatModelList.clear()
