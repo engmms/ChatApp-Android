@@ -44,18 +44,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //Prepare Firebase stuff
-        prepareFirebase()
-
-        //Initialize views
-        initializeViews()
-
         //Check if it is application's first run
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val state = sharedPreferences.getBoolean("firstrun", false)
         if (!state) {
             sharedPreferences.edit().putBoolean("firstrun", true).apply()
             startActivity(Intent(this@MainActivity, WelcomeActivity::class.java))
+        } else {
+            prepareFirebase()
+            initializeViews()
         }
     }
 

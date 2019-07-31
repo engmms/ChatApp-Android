@@ -1,5 +1,6 @@
 package com.peteralexbizjak.chatapp_android
 
+import com.peteralexbizjak.chatapp_android.models.firestore.ChatModel
 import com.peteralexbizjak.chatapp_android.models.firestore.ParticipantModel
 import org.junit.Test
 

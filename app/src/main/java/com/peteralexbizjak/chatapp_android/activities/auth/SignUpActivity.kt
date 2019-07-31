@@ -51,8 +51,8 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun initializeViews() {
         toolbar = findViewById(R.id.signupToolbar)
-        toolbar.setNavigationOnClickListener { startActivity(Intent(this@SignUpActivity, WelcomeActivity::class.java)) }
         setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener { startActivity(Intent(this@SignUpActivity, WelcomeActivity::class.java)) }
 
         displayName = findViewById(R.id.signupUsernameInput)
         email = findViewById(R.id.signupEmailInput)
