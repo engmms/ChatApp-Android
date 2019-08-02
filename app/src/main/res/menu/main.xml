@@ -12,6 +12,11 @@
             android:title="Your account"/>
 
         <item
+            android:id="@+id/mainMenuArchivedMessages"
+            android:icon="@drawable/ic_save"
+            android:title="Archive"/>
+
+        <item
             android:id="@+id/mainMenuSettings"
             android:icon="@drawable/ic_settings"
             android:title="Settings"/>
