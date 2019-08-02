@@ -25,6 +25,11 @@
         <activity android:name=".activities.auth.SignUpActivity"/>
         <activity android:name=".activities.channel.ChatActivity"/>
         <activity android:name=".activities.channel.FindUsers"/>
+        <activity android:name=".activities.navigation.AccountActivity"/>
+        <activity android:name=".activities.navigation.ArchiveActivity"/>
+        <activity android:name=".activities.navigation.SettingsActivity"/>
+        <activity android:name=".activities.info.PrivacyPolicyActivity"/>
+        <activity android:name=".activities.info.AboutActivity"/>
     </application>
 
 </manifest>
