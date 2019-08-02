@@ -78,6 +78,7 @@ class SignUpActivity : AppCompatActivity() {
                                         firebaseUser.uid,
                                         displayName.text.toString(),
                                         email.text.toString(),
+                                        null,
                                         null
                                     )
                                 )

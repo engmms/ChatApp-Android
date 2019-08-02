@@ -118,7 +118,8 @@ class WelcomeActivity : AppCompatActivity() {
                             user.uid,
                             user.displayName,
                             user.email,
-                            user.photoUrl.toString()
+                            user.photoUrl.toString(),
+                            null
                         )
                     )
                     startActivity(Intent(this@WelcomeActivity, MainActivity::class.java))
