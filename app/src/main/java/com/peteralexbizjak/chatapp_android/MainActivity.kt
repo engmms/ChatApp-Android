@@ -69,23 +69,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.mainRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        firebaseFirestore.collection("chats").get().addOnCompleteListener {
-            Log.d(TAG, "Firestore is being queried...")
-            if (it.isSuccessful) {
-                Log.d(TAG, "...query is successful")
-
-                for (documentSnapshot: DocumentSnapshot in it.result!!.documents)
-                    documentSnapshot.toObject(ChatModel::class.java)?.let { chatModelObject ->
-                        chatModelList.clear()
-                        if (chatModelObject.chatId.contains(firebaseAuth.currentUser!!.uid)) chatModelList.add(chatModelObject)
-                    }
-
-                adapter = ChannelRecyclerAdapter(this@MainActivity, chatModelList, firebaseAuth.currentUser!!.uid)
-                recyclerView.adapter = adapter
-
-                adapter.notifyDataSetChanged()
-            }
-        }
+        updateChannelsList()
 
         recyclerView.addOnItemClickListener(object: OnItemClickListener {
             override fun onItemClicked(view: View, position: Int) {
@@ -113,6 +97,24 @@ class MainActivity : AppCompatActivity() {
 
         floatingActionButton = findViewById(R.id.mainFab)
         floatingActionButton.setOnClickListener { startActivity(Intent(this@MainActivity, FindUsers::class.java)) }
+    }
+
+    private fun updateChannelsList() {
+        firebaseFirestore.collection("chats").get().addOnCompleteListener {
+            if (it.isSuccessful) {
+
+                chatModelList.clear()
+                for (documentSnapshot: DocumentSnapshot in it.result!!.documents)
+                    documentSnapshot.toObject(ChatModel::class.java)?.let { chatModelObject ->
+                        if (chatModelObject.chatId.contains(firebaseAuth.currentUser!!.uid)) chatModelList.add(chatModelObject)
+                    }
+
+                adapter = ChannelRecyclerAdapter(this@MainActivity, chatModelList, firebaseAuth.currentUser!!.uid)
+                recyclerView.adapter = adapter
+
+                adapter.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun RecyclerView.addOnItemClickListener(onClickListener: OnItemClickListener) {
