@@ -41,7 +41,8 @@ class ChannelRecyclerAdapter(
             }
         }
         chatModel.latestMessage.values.forEach {
-            holder.recipientLastMessage.text = it
+            if (it.length > 50) holder.recipientLastMessage.text = it.substring(0, 50) + "..."
+            else holder.recipientLastMessage.text = it
         }
     }
 
