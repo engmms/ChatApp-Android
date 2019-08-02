@@ -38,8 +38,6 @@ class MainActivity : AppCompatActivity() {
     private var chatModelList: MutableList<ChatModel> = ArrayList()
 
     private lateinit var floatingActionButton: FloatingActionButton
-    
-    private var registration: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +57,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        registration?.remove()
     }
 
     private fun prepareFirebase() {
@@ -79,25 +76,27 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.addOnItemClickListener(object: OnItemClickListener {
             override fun onItemClicked(view: View, position: Int) {
-                val chatModel: ChatModel = chatModelList[position]
-                val chatId: String = chatModel.chatId
+                val chatModel: ChatModel? = chatModelList[position]
 
-                chatModel.participants.forEach {
-                    if (!it.keys.contains(firebaseAuth.currentUser!!.uid)) {
-                        val recipientId: String = it.keys.elementAt(0)
-                        it.values.forEach { participantModel ->
-                            val recipientDisplayName: String = participantModel.displayName
-                            val recipientPhotoUrl: String = participantModel.displayName
+                if (chatModel != null) {
+                    val chatId: String = chatModel.chatId
+                    chatModel.participants.forEach {
+                        if (!it.keys.contains(firebaseAuth.currentUser!!.uid)) {
+                            val recipientId: String = it.keys.elementAt(0)
+                            it.values.forEach { participantModel ->
+                                val recipientDisplayName: String = participantModel.displayName
+                                val recipientPhotoUrl: String = participantModel.displayName
 
-                            val intent = Intent(this@MainActivity, ChatActivity::class.java)
-                            intent.putExtra("recipientId", recipientId)
-                            intent.putExtra("recipientDisplayName", recipientDisplayName)
-                            intent.putExtra("recipientPhotoUrl", recipientPhotoUrl)
-                            intent.putExtra("chatId", chatId)
-                            startActivity(intent)
+                                val intent = Intent(this@MainActivity, ChatActivity::class.java)
+                                intent.putExtra("recipientId", recipientId)
+                                intent.putExtra("recipientDisplayName", recipientDisplayName)
+                                intent.putExtra("recipientPhotoUrl", recipientPhotoUrl)
+                                intent.putExtra("chatId", chatId)
+                                startActivity(intent)
+                            }
                         }
                     }
-                }
+                } else Log.d(TAG, "Chat model at current position does not exist")
             }
         })
 
@@ -106,15 +105,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateChannelsList() {
-        val query: CollectionReference = firebaseFirestore.collection("chats")
-        registration = query.addSnapshotListener { snapshot, exception ->
+
+        adapter = ChannelRecyclerAdapter(this@MainActivity, chatModelList, firebaseAuth.currentUser!!.uid)
+        recyclerView.adapter = adapter
+
+        firebaseFirestore.collection("chats").addSnapshotListener { snapshot, exception ->
             if (exception != null) Log.d(TAG, "Exception occurred", exception)
             if (snapshot != null) {
                 chatModelList.clear()
                 for (documentSnapshot: DocumentSnapshot in snapshot.documents) {
-                    val chatModel: ChatModel? = documentSnapshot.toObject(ChatModel::class.java)
-                    chatModel?.let { chatModelList.add(it) }
-                    adapter.notifyDataSetChanged()
+                    documentSnapshot.toObject(ChatModel::class.java)?.let { chatModelObject: ChatModel ->
+                        if (chatModelObject.chatId.contains(firebaseAuth.currentUser!!.uid)) {
+                            chatModelList.add(chatModelObject)
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
                 }
             }
         }
