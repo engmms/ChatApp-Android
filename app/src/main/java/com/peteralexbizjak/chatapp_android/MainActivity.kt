@@ -8,6 +8,10 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,7 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var firebaseFirestore: FirebaseFirestore
 
-    private lateinit var toolbar: RelativeLayout
+    private lateinit var toolbar: Toolbar
+    private lateinit var drawerLayout: DrawerLayout
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ChannelRecyclerAdapter
@@ -55,8 +60,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) drawerLayout.closeDrawer(GravityCompat.START)
+        else super.onBackPressed()
     }
 
     private fun prepareFirebase() {
@@ -68,6 +74,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeViews() {
         toolbar = findViewById(R.id.mainToolbar)
+        setSupportActionBar(toolbar)
+
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        drawerLayout = findViewById(R.id.mainNavigationDrawer)
+        val actionBarDrawerToggle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            toolbar,
+            R.string.navigationOpen,
+            R.string.navigationClose
+        )
+
+        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        actionBarDrawerToggle.syncState()
 
         recyclerView = findViewById(R.id.mainRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
