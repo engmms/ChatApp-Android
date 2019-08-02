@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         //Check if it is application's first run
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val state = sharedPreferences.getBoolean("firstrun", false)
+        val state: Boolean = sharedPreferences.getBoolean("firstrun", false)
         if (!state) {
             sharedPreferences.edit().putBoolean("firstrun", true).apply()
             startActivity(Intent(this@MainActivity, WelcomeActivity::class.java))
