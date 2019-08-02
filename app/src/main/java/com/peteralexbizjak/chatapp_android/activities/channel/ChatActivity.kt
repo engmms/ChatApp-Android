@@ -126,9 +126,13 @@ class ChatActivity : AppCompatActivity() {
             //Create a list of HashMaps
             val hashmapsList: List<HashMap<String, ParticipantModel>> = arrayListOf(currentUserAsHashMap, recipientUserAsHashMap)
 
+            //For latest message hash (key: current user ID, value: message text)
+            val latestMessageHashMap: HashMap<String, String> = HashMap()
+            latestMessageHashMap[currentUserId] = message
+
             //Create a chat object and update chatId
             chatId = "$currentUserId???$recipientId"
-            val chatModel = ChatModel(chatId!!, hashmapsList)
+            val chatModel = ChatModel(chatId!!, hashmapsList, latestMessageHashMap)
 
             //Add data to Firestore
             firebaseFirestore
@@ -184,6 +188,15 @@ class ChatActivity : AppCompatActivity() {
                         else -> Log.d(TAG, "Message was NOT stored to the database")
                     }
                 }
+
+            val latestMessageHashMap: HashMap<String, String> = HashMap()
+            latestMessageHashMap[firebaseAuth.currentUser!!.uid] = message
+
+            //Update current chat document
+            firebaseFirestore
+                .collection("chats")
+                .document(chatId!!)
+                .update("latestMessage", latestMessageHashMap)
 
             //Clear the EditText + listen for changes in the database
             messageEditText.text.clear()

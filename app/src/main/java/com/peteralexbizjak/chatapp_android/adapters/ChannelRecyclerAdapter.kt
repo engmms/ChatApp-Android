@@ -37,9 +37,11 @@ class ChannelRecyclerAdapter(
                             .transform(CircleTransform())
                             .into(holder.recipientProfilePicture)
                     holder.recipientDisplayName.text = participantModel.displayName
-                    holder.recipientLastMessage.text = "Something something something..."
                 }
             }
+        }
+        chatModel.latestMessage.values.forEach {
+            holder.recipientLastMessage.text = it
         }
     }
 
