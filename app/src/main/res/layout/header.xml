@@ -1,0 +1,32 @@
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="176dp"
+        android:background="@color/secondaryLightColor"
+        android:gravity="bottom"
+        android:padding="16dp">
+
+    <ImageView
+            android:id="@+id/headerProfileImage"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/channel_bubble"
+            android:layout_marginBottom="8dp"/>
+
+    <TextView
+            android:id="@+id/headerDisplayName"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="John Doe"
+            android:textStyle="bold"
+            android:textColor="@color/primaryTextColor"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+    <TextView
+            android:id="@+id/headerEmail"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="john.doe@gmail.com"
+            android:textColor="#131313"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"/>
+
+</LinearLayout>
