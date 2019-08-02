@@ -30,6 +30,7 @@
         <activity android:name=".activities.navigation.SettingsActivity"/>
         <activity android:name=".activities.info.PrivacyPolicyActivity"/>
         <activity android:name=".activities.info.AboutActivity"/>
+        <activity android:name=".activities.navigation.EditAccountActivity"/>
     </application>
 
 </manifest>
