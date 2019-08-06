@@ -24,16 +24,11 @@ import com.google.firebase.firestore.*
 import com.peteralexbizjak.chatapp_android.activities.auth.WelcomeActivity
 import com.peteralexbizjak.chatapp_android.activities.channel.ChatActivity
 import com.peteralexbizjak.chatapp_android.activities.channel.FindUsers
-import com.peteralexbizjak.chatapp_android.activities.info.AboutActivity
-import com.peteralexbizjak.chatapp_android.activities.info.PrivacyPolicyActivity
-import com.peteralexbizjak.chatapp_android.activities.navigation.AccountActivity
-import com.peteralexbizjak.chatapp_android.activities.navigation.ArchiveActivity
-import com.peteralexbizjak.chatapp_android.activities.navigation.SettingsActivity
 import com.peteralexbizjak.chatapp_android.adapters.ChannelRecyclerAdapter
 import com.peteralexbizjak.chatapp_android.interfaces.OnItemClickListener
 import com.peteralexbizjak.chatapp_android.models.firestore.ChatModel
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -43,8 +38,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var firebaseFirestore: FirebaseFirestore
 
     private lateinit var toolbar: Toolbar
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ChannelRecyclerAdapter
@@ -68,24 +61,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) drawerLayout.closeDrawer(GravityCompat.START)
-        else super.onBackPressed()
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.mainMenuAccount -> startActivity(Intent(this@MainActivity, AccountActivity::class.java))
-            R.id.mainMenuArchivedMessages -> startActivity(Intent(this@MainActivity, ArchiveActivity::class.java))
-            R.id.mainMenuSettings -> startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-            R.id.mainMenuPrivacyPolicy -> startActivity(Intent(this@MainActivity, PrivacyPolicyActivity::class.java))
-            R.id.mainMenuAbout -> startActivity(Intent(this@MainActivity, AboutActivity::class.java))
-        }
-
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
-
     private fun prepareFirebase() {
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
@@ -98,21 +73,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        drawerLayout = findViewById(R.id.mainNavigationDrawer)
-        val actionBarDrawerToggle = ActionBarDrawerToggle(
-            this,
-            drawerLayout,
-            toolbar,
-            R.string.navigationOpen,
-            R.string.navigationClose
-        )
-
-        drawerLayout.addDrawerListener(actionBarDrawerToggle)
-        actionBarDrawerToggle.syncState()
-
-        navigationView = findViewById(R.id.mainNavigationView)
-        navigationView.setNavigationItemSelectedListener(this)
 
         recyclerView = findViewById(R.id.mainRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
