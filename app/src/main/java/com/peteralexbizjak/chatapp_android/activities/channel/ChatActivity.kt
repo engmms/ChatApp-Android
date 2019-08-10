@@ -4,10 +4,13 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
+import android.text.Spanned
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -103,13 +106,24 @@ class ChatActivity : AppCompatActivity() {
             }
         })
 
-        sendMessageIcon.setOnClickListener { sendMessage(messageEditText.text.toString()) }
+        sendMessageIcon.setOnClickListener { if (messageEditText.text.toString().isNotBlank()) sendMessage(messageEditText.text.toString()) }
     }
 
     private fun sendMessage(message: String) {
+
+        //Store current user ID
+        val currentUserId: String = firebaseAuth.currentUser!!.uid
+
+        //Create list of hashmaps for unread messages data
+        val currentUserUnreadHashMap: HashMap<String, Boolean> = HashMap()
+        val recipientuserUnreadHashMap: HashMap<String, Boolean> = HashMap()
+        currentUserUnreadHashMap[currentUserId] = false
+        recipientuserUnreadHashMap[recipientId] = true
+        val listOfUnreadMessageData: List<HashMap<String, Boolean>> = arrayListOf(currentUserUnreadHashMap, recipientuserUnreadHashMap)
+
+
         if (chatId == null) {
             //Handle creating current user structure
-            val currentUserId: String? = firebaseAuth.currentUser!!.uid
             val currenctUserAsParticipant = ParticipantModel(
                 firebaseAuth.currentUser!!.displayName,
                 firebaseAuth.currentUser!!.photoUrl.toString()
@@ -134,7 +148,7 @@ class ChatActivity : AppCompatActivity() {
 
             //Create a chat object and update chatId
             chatId = "$currentUserId???$recipientId"
-            val chatModel = ChatModel(chatId!!, hashmapsList, latestMessageHashMap)
+            val chatModel = ChatModel(chatId!!, hashmapsList, latestMessageHashMap, listOfUnreadMessageData)
 
             //Add data to Firestore
             firebaseFirestore
@@ -199,6 +213,10 @@ class ChatActivity : AppCompatActivity() {
                 .collection("chats")
                 .document(chatId!!)
                 .update("latestMessage", latestMessageHashMap)
+            firebaseFirestore
+                .collection("chats")
+                .document(chatId!!)
+                .update("unreadMessagesData", listOfUnreadMessageData)
 
             //Clear the EditText + listen for changes in the database
             messageEditText.text.clear()
